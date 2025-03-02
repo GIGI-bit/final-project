@@ -6,6 +6,7 @@ import {
   Image,
   Button,
   TextInput,
+  ScrollView,
   TouchableOpacity,
   Alert,
   Dimensions,
@@ -24,6 +25,8 @@ interface Item {
 export default function SignInScreen() {
   //
   const [data, setData] = useState<Item[]>([]);
+  const [tvShows, setTvShows] = useState<Item[]>([]);
+  const [mainPoster, setMainPoster] = useState("");
   useEffect(() => {
     const getData = async () => {
       try {
@@ -37,38 +40,119 @@ export default function SignInScreen() {
           }
         );
         if (response.ok) {
-          const data = await response.json();
+          const datas = await response.json();
           console.log(data);
-          setData(data.content);
+          setData(datas.content);
+          setMainPoster(datas.content[0].poster_path);
         }
       } catch (error) {
         console.log(error);
       }
     };
 
+    const getTvShows = async () => {
+      try {
+        const response = await fetch(
+          "http://192.168.1.6:5001/api/v1/tv/trending",
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+            },
+          }
+        );
+        if (response.ok) {
+          const data = await response.json();
+          console.log(data);
+          setTvShows(data.content);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    getTvShows();
     getData();
   }, []);
   return (
-    <View className="flex-1 justify-center items-center">
-      <View>
-        <Image />
-      </View>
-      <FlatList
-        ListEmptyComponent={<Text>No items available</Text>}
-        keyExtractor={(item) => item.id.toString()}
-        data={data}
-        renderItem={({ item }) => (
-          <View>
-            <Image
-              source={{
-                uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
-              }}
-              style={{ width: 150, height: 225 }}
-            />
-            <Text className="text-white">{item.original_title}</Text>
-          </View>
+    <ScrollView style={styles.container}>
+      <View style={{ alignItems: "center", position: "relative" }}>
+        {mainPoster && (
+          <Image
+            source={{
+              uri: `https://image.tmdb.org/t/p/w500${mainPoster}`,
+            }}
+            style={styles.mainPoster}
+          />
         )}
-      ></FlatList>
-    </View>
+      </View>
+      <View style={{ marginBottom: 60 }}>
+        <Text style={styles.flatListHeaders}>Trending Movies</Text>
+        <FlatList
+          ListEmptyComponent={<Text>No items available</Text>}
+          keyExtractor={(item) => item.id.toString()}
+          data={data}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View style={styles.smallPosterContainer}>
+              <Image
+                source={{
+                  uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                }}
+                style={styles.smallPoster}
+              />
+            </View>
+          )}
+        ></FlatList>
+      </View>
+      <View style={{ marginBottom: 60 }}>
+        <Text style={styles.flatListHeaders}>Trending TvShows</Text>
+        <FlatList
+          ListEmptyComponent={<Text>No items available</Text>}
+          keyExtractor={(item) => item.id.toString()}
+          data={tvShows}
+          horizontal={true}
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => (
+            <View style={styles.smallPosterContainer}>
+              <Image
+                source={{
+                  uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
+                }}
+                style={styles.smallPoster}
+              />
+            </View>
+          )}
+        ></FlatList>
+      </View>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 10,
+    // alignItems: "center",
+    backgroundColor: "#000",
+    paddingTop: 20,
+  },
+  mainPoster: {
+    width: 300,
+    height: 450,
+    borderRadius: 10,
+  },
+  smallPosterContainer: {
+    marginRight: 10,
+  },
+  smallPoster: {
+    width: 120,
+    height: 180,
+    borderRadius: 10,
+  },
+  flatListHeaders: {
+    color: "white",
+    margin: 3,
+  },
+});
