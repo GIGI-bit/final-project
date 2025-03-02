@@ -4,6 +4,9 @@ import {
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
+import { NavigationContainer } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
@@ -20,38 +23,29 @@ export default function RootLayout() {
   const [loaded] = useFonts({
     SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
   });
-  const [isOnboarded, setIsOnboarded] = useState(false);
-  const [isSignedIn, setIsSignedIn] = useState(false);
 
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
     }
   }, [loaded]);
-  useEffect(() => {
-    const checkOnboarding = async () => {
-      const onboarded = await localStorage.getItem("onboarded");
-      const signedIn = await localStorage.getItem("signedIn");
-      setIsOnboarded(!!onboarded);
-      setIsSignedIn(!!signedIn);
-    };
-    checkOnboarding();
-  }, []);
 
   if (!loaded) {
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
+    <NavigationContainer>
+      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
         <Stack>
-          <Stack.Screen name="signin" options={{ headerShown: false }} />
+          <Stack>
+            <Stack.Screen name="signin" options={{ headerShown: false }} />
 
-          <Stack.Screen name="tabs" options={{ headerShown: false }} />
+            <Stack.Screen name="tabs" options={{ headerShown: false }} />
+          </Stack>
         </Stack>
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </NavigationContainer>
   );
 }

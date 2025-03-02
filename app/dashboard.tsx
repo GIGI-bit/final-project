@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { useNavigation } from "@react-navigation/native";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 interface Item {
@@ -22,11 +23,13 @@ interface Item {
   poster_path: string;
 }
 
-export default function SignInScreen() {
+export default function DashboardScreen() {
   //
   const [data, setData] = useState<Item[]>([]);
   const [tvShows, setTvShows] = useState<Item[]>([]);
   const [mainPoster, setMainPoster] = useState("");
+
+  const navigation = useNavigation<any>();
   useEffect(() => {
     const getData = async () => {
       try {
@@ -95,14 +98,19 @@ export default function SignInScreen() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
-            <View style={styles.smallPosterContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("MovieDetails", { movieId: item.id })
+              }
+              style={styles.smallPosterContainer}
+            >
               <Image
                 source={{
                   uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
                 }}
                 style={styles.smallPoster}
               />
-            </View>
+            </TouchableOpacity>
           )}
         ></FlatList>
       </View>
@@ -115,14 +123,19 @@ export default function SignInScreen() {
           horizontal={true}
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
-            <View style={styles.smallPosterContainer}>
+            <TouchableOpacity
+              onPress={() =>
+                navigation.navigate("MovieDetails", { movieId: item.id })
+              }
+              style={styles.smallPosterContainer}
+            >
               <Image
                 source={{
                   uri: `https://image.tmdb.org/t/p/w500${item.poster_path}`,
                 }}
                 style={styles.smallPoster}
               />
-            </View>
+            </TouchableOpacity>
           )}
         ></FlatList>
       </View>
