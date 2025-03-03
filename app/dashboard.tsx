@@ -14,7 +14,6 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { useNavigation } from "@react-navigation/native";
 import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 interface Item {
@@ -28,8 +27,7 @@ export default function DashboardScreen() {
   const [data, setData] = useState<Item[]>([]);
   const [tvShows, setTvShows] = useState<Item[]>([]);
   const [mainPoster, setMainPoster] = useState("");
-
-  const navigation = useNavigation<any>();
+  const router = useRouter();
   useEffect(() => {
     const getData = async () => {
       try {
@@ -99,9 +97,7 @@ export default function DashboardScreen() {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("MovieDetails", { movieId: item.id })
-              }
+              onPress={() => router.push(`./movies/${item.id}`)}
               style={styles.smallPosterContainer}
             >
               <Image
@@ -124,9 +120,7 @@ export default function DashboardScreen() {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() =>
-                navigation.navigate("MovieDetails", { movieId: item.id })
-              }
+              onPress={() => router.push(`./tvShows/${item.id}`)}
               style={styles.smallPosterContainer}
             >
               <Image
