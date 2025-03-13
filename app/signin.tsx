@@ -11,12 +11,20 @@ import {
   Dimensions,
 } from "react-native";
 import { useEffect, useState } from "react";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 
 export default function SignInScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
+  const saveToken = async (token: string) => {
+    try {
+      await AsyncStorage.setItem("accessToken", token);
+    } catch (error) {
+      console.error("Error saving token:", error);
+    }
+  };
 
   const handleSignIn = async () => {
     try {
@@ -35,8 +43,8 @@ export default function SignInScreen() {
       });
       if (response.ok) {
         const data = await response.json();
-        console.log(data);
-        console.log("success");
+        saveToken(data.token);
+        router.push("/dashboard");
       } else {
         console.log("failed");
       }
@@ -91,7 +99,7 @@ export default function SignInScreen() {
 
       <TouchableOpacity
         // onPress={handleSignIn}
-        onPress={() => router.push("/dashboard")}
+        onPress={() => handleSignIn()}
         style={{
           backgroundColor: "red",
           padding: 10,

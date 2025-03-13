@@ -26,7 +26,7 @@ export default function RegisterScreen() {
       console.log(password);
       console.log(username);
       const response = await fetch(
-        "http://172.17.48.1:5001/api/v1/auth/signup",
+        "http://192.168.1.5:5001/api/v1/auth/signup",
         {
           method: "POST",
           headers: {
@@ -41,8 +41,7 @@ export default function RegisterScreen() {
         }
       );
       if (response.ok) {
-        const data = await response.json();
-        console.log(data);
+        router.push("/signin");
       } else {
         console.log("failed");
       }

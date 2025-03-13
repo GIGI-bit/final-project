@@ -14,9 +14,8 @@ import {
 } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
-interface Item {
+export interface Item {
   id: number;
   original_title: string;
   poster_path: string;
@@ -29,10 +28,11 @@ export default function DashboardScreen() {
   const [mainPoster, setMainPoster] = useState("");
   const router = useRouter();
   useEffect(() => {
+    console.log("dashboard hello!!!");
     const getData = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.6:5001/api/v1/movie/trending",
+          "http://192.168.1.5:5001/api/v1/movie/trending",
           {
             method: "GET",
             headers: {
@@ -42,10 +42,11 @@ export default function DashboardScreen() {
         );
         if (response.ok) {
           const datas = await response.json();
-          console.log(data);
+          console.log(datas);
           setData(datas.content);
-          setMainPoster(datas.content[0].poster_path);
+          setMainPoster(datas.content[0]?.poster_path || "");
         }
+        console.log("after if");
       } catch (error) {
         console.log(error);
       }
@@ -54,7 +55,7 @@ export default function DashboardScreen() {
     const getTvShows = async () => {
       try {
         const response = await fetch(
-          "http://192.168.1.6:5001/api/v1/tv/trending",
+          "http://192.168.1.5:5001/api/v1/tv/trending",
           {
             method: "GET",
             headers: {
@@ -64,7 +65,7 @@ export default function DashboardScreen() {
         );
         if (response.ok) {
           const data = await response.json();
-          console.log(data);
+          console.log("tv shows  --->   " + data.content);
           setTvShows(data.content);
         }
       } catch (error) {
@@ -97,7 +98,7 @@ export default function DashboardScreen() {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => router.push(`./movies/${item.id}`)}
+              onPress={() => router.push(`./details/movie/${item.id}`)}
               style={styles.smallPosterContainer}
             >
               <Image
@@ -120,7 +121,7 @@ export default function DashboardScreen() {
           showsHorizontalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity
-              onPress={() => router.push(`./tvShows/${item.id}`)}
+              onPress={() => router.push(`./details/tv/${item.id}`)}
               style={styles.smallPosterContainer}
             >
               <Image
